@@ -93,4 +93,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:${lifecycle_version}")
 
     implementation("androidx.graphics:graphics-shapes:1.0.1")
+
+    implementation("androidx.compose.foundation:foundation:1.9.1")
+
 }

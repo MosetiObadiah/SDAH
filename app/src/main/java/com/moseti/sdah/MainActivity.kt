@@ -4,31 +4,56 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.moseti.sdah.data.HymnLoader
+import com.moseti.sdah.models.Hymn
 import com.moseti.sdah.navigation.AppNavHost
 import com.moseti.sdah.ui.theme.SDAHTheme
+import com.moseti.sdah.viewmodels.SingleHymnViewModel
+import com.moseti.sdah.viewmodels.SingleHymnViewModelFactory
 import kotlinx.serialization.Serializable
 
 class MainActivity : ComponentActivity() {
+
+    val hymnsList: List<Hymn> by lazy {
+        HymnLoader.loadHymns(this)
+    }
+
+    val singleHymnViewModel: SingleHymnViewModel by viewModels {
+        SingleHymnViewModelFactory(hymnsList)
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
             SDAHTheme {
                 val navController = rememberNavController()
@@ -39,8 +64,34 @@ class MainActivity : ComponentActivity() {
                         BottomNavItem.PlayLists
                     )
                 }
+                val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
                 Scaffold(
+                    topBar = {
+                        LargeTopAppBar(
+                            colors = TopAppBarDefaults.topAppBarColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                titleContentColor = MaterialTheme.colorScheme.primary,
+                            ),
+                            title = {
+                                Text(
+                                    "Large Top App Bar",
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            },
+                            actions = {
+                                IconButton(onClick = { /* do something */ }) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Menu,
+                                        contentDescription = "Localized description"
+                                    )
+                                }
+                            },
+                            scrollBehavior = scrollBehavior
+                        )
+                    },
+
                     bottomBar = {
                         NavigationBar {
                             val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -77,7 +128,7 @@ class MainActivity : ComponentActivity() {
                     },
                     modifier = Modifier.fillMaxSize()
                 ) { innerPadding ->
-                    AppNavHost(navController, innerPadding)
+                    AppNavHost(singleHymnViewModel, navController, innerPadding)
                 }
             }
         }

@@ -11,6 +11,7 @@ import com.moseti.sdah.ui.screens.HomeScreen
 import com.moseti.sdah.ui.screens.HymnalScreen
 import com.moseti.sdah.ui.screens.PlayListsScreen
 import com.moseti.sdah.ui.screens.SingleHymnScreen
+import com.moseti.sdah.viewmodels.SingleHymnViewModel
 import kotlinx.serialization.Serializable
 
 @Serializable object Home
@@ -20,6 +21,7 @@ import kotlinx.serialization.Serializable
 
 @Composable
 fun AppNavHost(
+    singleHymnViewModel: SingleHymnViewModel,
     navController: NavHostController,
     paddingValues: PaddingValues
 ) {
@@ -31,6 +33,6 @@ fun AppNavHost(
         composable<Home> { HomeScreen() }
         composable<Hymnals> { HymnalScreen() }
         composable<PlayLists> { PlayListsScreen() }
-        composable<SingleHymn> { SingleHymnScreen() }
+        composable<SingleHymn> { SingleHymnScreen(singleHymnViewModel) }
     }
 }
