@@ -8,8 +8,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class HymnsViewModel(val allHymns: List<Hymn>) : ViewModel() {
-
-    // Private state for the currently selected hymn's index
     private val _selectedHymnIndex = MutableStateFlow<Int?>(null)
 
     // Public, read-only state for the UI to observe
@@ -32,8 +30,6 @@ class HymnsViewModel(val allHymns: List<Hymn>) : ViewModel() {
     }
 }
 
-
-// The factory is mostly the same, just renamed for clarity.
 class HymnsViewModelFactory(
     private val hymnsList: List<Hymn>
 ) : ViewModelProvider.Factory {

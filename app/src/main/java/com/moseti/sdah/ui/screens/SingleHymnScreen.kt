@@ -41,7 +41,6 @@ fun SingleHymnScreen(
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // ... (All your existing state management code remains the same)
     val hymns = hymnsViewModel.allHymns
     val initialPage = hymnsViewModel.selectedHymnIndex.collectAsState().value ?: 0
 
@@ -88,31 +87,20 @@ fun SingleHymnScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) { pageIndex ->
-            // This is where we add the scroll effect!
             val hymn = hymns[pageIndex]
             HymnDetailContent(
                 hymn = hymn,
-                // NEW: Add a graphicsLayer modifier to apply transformations
                 modifier = Modifier.graphicsLayer {
-                    // 1. Calculate the offset of the page from the center
-                    // This will be 0 for the current page, -1 for the page to the left, 1 for the page to the right
-                    // and fractional values in between as you scroll.
                     val pageOffset = (
                             (pagerState.currentPage - pageIndex) + pagerState.currentPageOffsetFraction
                             ).absoluteValue
 
-                    // 2. Animate the alpha (fade) based on the offset
-                    // The page in the center has alpha 1 (fully visible)
-                    // The pages next to it will have alpha 0.5f (partially faded)
                     alpha = lerp(
                         start = 0.5f,
                         stop = 1f,
                         fraction = 1f - pageOffset.coerceIn(0f, 1f)
                     )
 
-                    // 3. Animate the scale based on the offset
-                    // The page in the center has scale 1 (full size)
-                    // The pages next to it will be 85% of the size
                     val scale = lerp(
                         start = 0.85f,
                         stop = 1f,
@@ -127,13 +115,11 @@ fun SingleHymnScreen(
 }
 
 @Composable
-fun HymnDetailContent(hymn: Hymn, modifier: Modifier = Modifier) { // UPDATED: Accept a modifier
+fun HymnDetailContent(hymn: Hymn, modifier: Modifier = Modifier) {
     LazyColumn(
-        // UPDATED: Apply the passed-in modifier here
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp)
     ) {
-        // ... (The rest of this function is exactly the same)
         items(hymn.verses) { verse ->
             if (verse.lines.isNotEmpty()) {
                 Text(
