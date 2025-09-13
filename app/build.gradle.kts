@@ -23,11 +23,17 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            ndk {
+                // Specifies the exact architectures to include in the release build.
+                abiFilters += listOf("armeabi-v7a", "arm64-v8a")
+            }
         }
     }
     compileOptions {
@@ -95,5 +101,7 @@ dependencies {
     implementation("androidx.graphics:graphics-shapes:1.0.1")
 
     implementation("androidx.compose.foundation:foundation:1.9.1")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.4.0")
 
 }

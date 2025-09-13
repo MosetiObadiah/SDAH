@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.moseti.sdah.ui.screens.FeedbackScreen
 import com.moseti.sdah.ui.screens.HymnsListScreen
 import com.moseti.sdah.ui.screens.SingleHymnScreen
 import com.moseti.sdah.viewmodels.HymnsViewModel
@@ -12,6 +13,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable object Hymns
 @Serializable object SingleHymn
+
+@Serializable object Feedback
 
 @Composable
 fun AppNavHost(
@@ -30,6 +33,9 @@ fun AppNavHost(
                 // When a hymn is clicked, update the VM and navigate
                 hymnsViewModel.selectHymn(index)
                 navController.navigate(SingleHymn)
+            },
+            onNavigateToFeedback = {
+                navController.navigate(Feedback)
             }
         ) }
         composable<SingleHymn> { SingleHymnScreen(
@@ -38,5 +44,10 @@ fun AppNavHost(
                 navController.popBackStack()
             }
         ) }
+        composable<Feedback> {
+            FeedbackScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
     }
 }

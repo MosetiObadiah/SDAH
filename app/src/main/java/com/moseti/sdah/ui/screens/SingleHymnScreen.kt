@@ -46,7 +46,7 @@ fun SingleHymnScreen(
 
     val pagerState = rememberPagerState(
         initialPage = initialPage,
-        pageCount = { hymns.size }
+        pageCount = { hymns.value.size }
     )
     val coroutineScope = rememberCoroutineScope()
 
@@ -64,7 +64,7 @@ fun SingleHymnScreen(
         }
     }
 
-    val currentHymn = hymns.getOrNull(pagerState.currentPage)
+    val currentHymn = hymns.collectAsState().value.getOrNull(pagerState.currentPage)
 
     Scaffold(
         topBar = {
@@ -87,7 +87,7 @@ fun SingleHymnScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) { pageIndex ->
-            val hymn = hymns[pageIndex]
+            val hymn = hymns.collectAsState().value[pageIndex]
             HymnDetailContent(
                 hymn = hymn,
                 modifier = Modifier.graphicsLayer {

@@ -2,6 +2,7 @@ package com.moseti.sdah.ui.screens
 
 import android.widget.Toast
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,10 +15,13 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -37,6 +41,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.moseti.sdah.models.Hymn
 import com.moseti.sdah.ui.components.NumberPadSheet
 import com.moseti.sdah.viewmodels.HymnsViewModel
@@ -46,8 +51,10 @@ import com.moseti.sdah.viewmodels.HymnsViewModel
 fun HymnsListScreen(
     hymnsViewModel: HymnsViewModel,
     onHymnClick: (Int) -> Unit,
+    onNavigateToFeedback: () -> Unit,
 ) {
-    val hymns = hymnsViewModel.allHymns
+    val isLoading by hymnsViewModel.isLoading.collectAsStateWithLifecycle()
+    val hymns by hymnsViewModel.allHymns.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
     val isScrollingDown = listState.isScrollingDown()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -60,7 +67,15 @@ fun HymnsListScreen(
         topBar = {
             TopAppBar(
                 title = { Text(text = "Hymns") },
-                scrollBehavior = scrollBehavior
+                scrollBehavior = scrollBehavior,
+                actions = {
+                    IconButton(onClick = onNavigateToFeedback) {
+                        Icon(
+                            imageVector = Icons.Outlined.Info,
+                            contentDescription = "Send Feedback"
+                        )
+                    }
+                }
             )
         },
         floatingActionButton = {
@@ -72,37 +87,48 @@ fun HymnsListScreen(
             )
         }
     ) { paddingValues ->
-        LazyColumn(
-            state = listState,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            itemsIndexed(
-                items = hymns,
-                key = { _, hymn -> hymn.number }
-            ) { index, hymn ->
-                HymnListItem(
-                    hymn = hymn,
-                    onClick = { onHymnClick(index) }
-                )
-                HorizontalDivider()
+        if (isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
             }
-        }
-    }
+        } else {
 
-    NumberPadSheet(
-        showSheet = showNumpadSheet,
-        onDismiss = { showNumpadSheet = false },
-        onHymnSelect = { hymnNumber ->
-            val index = hymns.indexOfFirst { it.number == hymnNumber }
-            if (index != -1) {
-                onHymnClick(index)
-            } else {
-                Toast.makeText(context, "Hymn not found", Toast.LENGTH_SHORT).show()
+
+            LazyColumn(
+                state = listState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                itemsIndexed(
+                    items = hymns,
+                    key = { _, hymn -> hymn.number }
+                ) { index, hymn ->
+                    HymnListItem(
+                        hymn = hymn,
+                        onClick = { onHymnClick(index) }
+                    )
+                    HorizontalDivider()
+                }
             }
         }
-    )
+
+        NumberPadSheet(
+            showSheet = showNumpadSheet,
+            onDismiss = { showNumpadSheet = false },
+            onHymnSelect = { hymnNumber ->
+                val index = hymns.indexOfFirst { it.number == hymnNumber }
+                if (index != -1) {
+                    onHymnClick(index)
+                } else {
+                    Toast.makeText(context, "Hymn not found", Toast.LENGTH_SHORT).show()
+                }
+            }
+        )
+    }
 }
 @Composable
 private fun LazyListState.isScrollingDown(): Boolean {

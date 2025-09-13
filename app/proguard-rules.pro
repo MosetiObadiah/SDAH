@@ -19,3 +19,12 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Keep all classes annotated with @Serializable
+-keep public class * {
+    @kotlinx.serialization.Serializable <methods>;
+}
+# Keep the companion object for serialization
+-keep class *$$serializer {
+    <methods>;
+}
