@@ -28,3 +28,7 @@
 -keep class *$$serializer {
     <methods>;
 }
+
+
+-dontwarn kotlinx.coroutines.**
+-dontwarn androidx.lifecycle.**

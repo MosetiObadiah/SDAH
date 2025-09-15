@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.moseti.sdah.ui.screens.FeedbackScreen
 import com.moseti.sdah.ui.screens.HymnsListScreen
+import com.moseti.sdah.ui.screens.SearchScreen
 import com.moseti.sdah.ui.screens.SingleHymnScreen
 import com.moseti.sdah.viewmodels.HymnsViewModel
 import kotlinx.serialization.Serializable
@@ -15,6 +16,8 @@ import kotlinx.serialization.Serializable
 @Serializable object SingleHymn
 
 @Serializable object Feedback
+
+@Serializable object Search
 
 @Composable
 fun AppNavHost(
@@ -36,7 +39,8 @@ fun AppNavHost(
             },
             onNavigateToFeedback = {
                 navController.navigate(Feedback)
-            }
+            },
+            onNavigateToSearch = { navController.navigate(Search) }
         ) }
         composable<SingleHymn> { SingleHymnScreen(
             hymnsViewModel = hymnsViewModel,
@@ -47,6 +51,16 @@ fun AppNavHost(
         composable<Feedback> {
             FeedbackScreen(
                 onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        composable<Search> {
+            SearchScreen(
+                hymnsViewModel = hymnsViewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onHymnClick = { index ->
+                    hymnsViewModel.selectHymn(index)
+                    navController.navigate(SingleHymn)
+                }
             )
         }
     }

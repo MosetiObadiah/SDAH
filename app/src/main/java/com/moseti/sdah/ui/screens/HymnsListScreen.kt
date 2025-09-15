@@ -1,7 +1,11 @@
 package com.moseti.sdah.ui.screens
 
+import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -52,7 +56,12 @@ fun HymnsListScreen(
     hymnsViewModel: HymnsViewModel,
     onHymnClick: (Int) -> Unit,
     onNavigateToFeedback: () -> Unit,
+    onNavigateToSearch: () -> Unit,
 ) {
+    val searchQuery by hymnsViewModel.searchQuery.collectAsStateWithLifecycle()
+    val searchResults by hymnsViewModel.searchResults.collectAsStateWithLifecycle()
+    val isSearching by hymnsViewModel.isSearching.collectAsStateWithLifecycle()
+
     val isLoading by hymnsViewModel.isLoading.collectAsStateWithLifecycle()
     val hymns by hymnsViewModel.allHymns.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
@@ -75,6 +84,13 @@ fun HymnsListScreen(
                             contentDescription = "Send Feedback"
                         )
                     }
+
+                    IconButton(onClick = onNavigateToSearch) {
+                        Icon(
+                            imageVector = Icons.Filled.Search,
+                            contentDescription = "Search hymns"
+                        )
+                    }
                 }
             )
         },
@@ -82,8 +98,17 @@ fun HymnsListScreen(
             ExtendedFloatingActionButton(
                 onClick = { showNumpadSheet = true },
                 expanded = !isScrollingDown,
-                icon = { Icon(Icons.Filled.Search, contentDescription = "Open number pad") },
-                text = { Text("Find") }
+                icon = { Icon(Icons.Filled.Search, contentDescription = "Open number pad on click, long press to search") },
+                text = { Text("Find") },
+                modifier = Modifier.combinedClickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = LocalIndication.current,
+                    onClick = { showNumpadSheet = true },
+                    onLongClick = onNavigateToSearch,
+                    onDoubleClick = {
+                    // Todo handle double click
+                    }
+                )
             )
         }
     ) { paddingValues ->
@@ -173,4 +198,8 @@ fun HymnListItem(
             modifier = Modifier.weight(1f)
         )
     }
+}
+
+fun searchHymns(context: Context) {
+    Toast.makeText(context, "search button clicked", Toast.LENGTH_SHORT).show()
 }
