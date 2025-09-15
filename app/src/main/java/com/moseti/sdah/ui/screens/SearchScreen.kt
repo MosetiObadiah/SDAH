@@ -25,15 +25,20 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.moseti.sdah.viewmodels.HymnsViewModel
 import com.moseti.sdah.viewmodels.SearchResult
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,6 +51,12 @@ fun SearchScreen(
     val searchResults by hymnsViewModel.searchResults.collectAsStateWithLifecycle()
     val isSearching by hymnsViewModel.isSearching.collectAsStateWithLifecycle()
 
+    val focusRequester = remember { FocusRequester() }
+    LaunchedEffect(Unit) {
+        delay(100)
+        focusRequester.requestFocus()
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -54,7 +65,8 @@ fun SearchScreen(
                         value = searchQuery,
                         onValueChange = hymnsViewModel::onSearchQueryChange,
                         placeholder = { Text("Search title or lyrics...") },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth()
+                            .focusRequester(focusRequester),
                         singleLine = true,
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = MaterialTheme.colorScheme.surface,
