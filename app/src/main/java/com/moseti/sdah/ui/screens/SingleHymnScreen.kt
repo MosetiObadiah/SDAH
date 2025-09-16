@@ -12,6 +12,8 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,11 +26,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
+import com.moseti.sdah.R
 import com.moseti.sdah.models.Hymn
 import com.moseti.sdah.viewmodels.HymnsViewModel
 import kotlinx.coroutines.launch
@@ -79,7 +83,30 @@ fun SingleHymnScreen(
                     }
                 }
             )
-        }
+        },
+        bottomBar = {
+            BottomAppBar(
+                actions = {
+                    IconButton(onClick = { /* do something */ }) {
+                        Icon(
+                            painter = painterResource(R.drawable.outline_font_download_24),
+                            contentDescription = "Font Control")
+                    }
+                    IconButton(onClick = { /* do something */ }) {
+                        Icon(
+                            painter = painterResource(R.drawable.outline_playlist_add_24),
+                            contentDescription = "Add to playlist",
+                        )
+                    }
+                    IconButton(onClick = { /* do something */ }) {
+                        Icon(
+                            Icons.Filled.Favorite,
+                            contentDescription = "Add to favourites",
+                        )
+                    }
+                }
+            )
+        },
     ) { paddingValues ->
         HorizontalPager(
             state = pagerState,
